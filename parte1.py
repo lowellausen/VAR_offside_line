@@ -31,5 +31,5 @@ while 1:
     k = cv2.waitKey(0)
 
     if (k == 27):
-        break
         cv2.destroyAllWindows()
+        break
