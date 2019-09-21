@@ -1,13 +1,15 @@
 import cv2
 
 
+#
+
 def mouse_callback(event, x, y, flags, params):
 
     if event == 1:
         pos = (x, y)
 
         print(pos)
-img = cv2.imread('maracana1.jpg')
+img = cv2.imread('maracana2.jpg')
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
 cv2.resizeWindow('image', img.shape[1], img.shape[0])
 
@@ -19,4 +21,5 @@ while 1:
     k = cv2.waitKey(0)
 
     if (k == 27):
-        breakcv2.destroyAllWindows()
+        break
+        cv2.destroyAllWindows()
