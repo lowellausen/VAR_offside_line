@@ -20,4 +20,6 @@ while 1:
 
     if (k == 27):
         cv2.destroyAllWindows()
-''
+        break
+
+
