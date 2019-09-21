@@ -19,4 +19,5 @@ while 1:
     k = cv2.waitKey(0)
 
     if (k == 27):
-        breakcv2.destroyAllWindows()
+        cv2.destroyAllWindows()
+''
