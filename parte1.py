@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 def mouse_callback(event, x, y, flags, params):
@@ -7,6 +8,13 @@ def mouse_callback(event, x, y, flags, params):
         pos = (x, y)
 
         print(pos)
+
+
+img = cv2.imread('maracana1.jpg')
+size = (img.shape[1], img.shape[0])
+cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('image', size[0], size[1])
+cv2.setMouseCallback('image', mouse_callback)
 
 
 points = {
@@ -18,7 +26,6 @@ points = {
     (274, 83):  (-48.66, 0.0, 0.0),  #bandeira
     (249, 221): (16.5, 16.5, 0.0)    #grande area
      }
-
 """
 origem = (124,156) #ponto(0,0,0)
 trave = (123, 126)
@@ -31,15 +38,34 @@ bandeira = (274,83)# (-48.66, 0,0)
 grande_area = (249,221)#(16.5,16.5,0)
 """
 
-img = cv2.imread('maracana1.jpg')
-cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-cv2.resizeWindow('image', img.shape[1], img.shape[0])
+#preparando em arrays para a função opencv
+world_points = []
+img_points = []
+
+
+for k in points.keys():
+    world_points.append(tuple(points[k]))
+    img_points.append(tuple(k))
+
+world_points = np.array(world_points, 'float32')
+img_points = np.array(img_points, 'float32')
+
+camera_matrix = cv2.initCameraMatrix2D([world_points], [img_points], size)
+print(camera_matrix)
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera([world_points], [img_points], size, camera_matrix, None, flags=cv2.CALIB_USE_INTRINSIC_GUESS)
+rodri, jacobison = cv2.Rodrigues(rvecs[0])
+concat = np.hstack((rodri, tvecs[0]))
+print(camera_matrix)
+print(mtx)
+
+
+
+cv2.imshow('image', img)
+
 
 k = 0
 #set mouse callback function for window
 while 1:
-    cv2.setMouseCallback('image', mouse_callback)
-    cv2.imshow('image', img)
     k = cv2.waitKey(0)
 
     if (k == 27):
