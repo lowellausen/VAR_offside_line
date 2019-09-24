@@ -67,6 +67,7 @@ cv2.setMouseCallback('image', mouse_callback)
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
     (589, 116): (0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
+
     #(377, 134): (-3.66, 11.0, 1.0),  # marca de penal
     #(268, 60): (16.5, 16.5, 1.0),  # grande área
     #(508, 177): (-(5.5 + 7.32), 5.5, 1.0),  # pequena área
@@ -74,6 +75,7 @@ points = {
     (266, 238): (-(16.5 + 7.32), 16.5, 1.0),
     (525, 23): (50.0, 0.0, 1.0),
     (262, 343): (-57.32, 16.5, 1.0),
+
     #(268, 60): (16.5, 16.5, 1.0)
 }
 

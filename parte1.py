@@ -64,14 +64,23 @@ cv2.setMouseCallback('image', mouse_callback)
 # pontos medidos manualmente que serão utilizados para a calibração da câmera
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
-    (124, 156): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
-    (123, 126): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
-    (160, 175): (5.5, 5.5, 0.0, 1.0),  # pequena area
-    (254, 158): (-3.66, 11.0, 0.0, 1.0),  # mara de penalti, talvez
-    (159, 110): (-7.32, 0.0, 2.44, 1.0),  # meio da trave direita
-    (274, 82): (-48.66, 0.0, 0.0, 1.0),  # bandeira
-    (249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
+    #(124, 156): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
+    #(123, 126): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
+    #(160, 175): (5.5, 5.5, 0.0, 1.0),  # pequena area
+    #(254, 158): (-3.66, 11.0, 0.0, 1.0),  # mara de penalti, talvez
+    #(159, 110): (-7.32, 0.0, 2.44, 1.0),  # meio da trave direita
+    #(274, 82): (-48.66, 0.0, 0.0, 1.0),  # bandeira
+    #(249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
+
+    (160, 139): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
+    (159, 111): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
+    (124, 157): (7.32, 0.0, 0.0, 1.0),  # pequena area
+    (123, 127): (7.32, 0.0, 2.44, 1.0),  # mara de penalti, talvez
+    (161, 176): (12.82, 5.5, 0.0, 1.0),  # meio da trave direita
+    (242, 131): (-5.5, 5.5, 0.0, 1.0),  # bandeira
+    #(249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
 }
+
 """
 origem = (124,156) #ponto(0,0,0)
 trave = (123, 126)
