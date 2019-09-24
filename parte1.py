@@ -8,7 +8,7 @@ def project(mat, arr):
     for i in range(3):
         for j in range(4):
             res[i] += mat[i][j] * arr[j]
-    res = res // res[2]
+    res = res / res[2]
     return res
 
 
@@ -29,12 +29,13 @@ def draw_square_at(pos):
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
 def mouse_callback(event, x, y, flags, params):
     if event == 1:
-        pos = (x, y)
+        pos = (124, 156)
+        #pos = (x, y)
 
         point_plane = reproject(minip_inv, pos)
 
-        print(point_plane)
-        print(project(p_matrix, point_plane))
+        #print(point_plane)
+        #print(project(p_matrix, point_plane))
 
         head_point = point_plane
 
@@ -44,14 +45,17 @@ def mouse_callback(event, x, y, flags, params):
 
         head_point3d = project(p_matrix, head_point)
 
-        #print(head_point3d)
+        for i in range(3):
+            head_point3d[i] = np.round(head_point3d[i])
+
+        print(head_point3d)
 
         draw_square_at(pos)
         draw_square_at(head_point3d)
 
         cv2.imshow('image', img)
 
-        print(pos)
+        #print(pos)
 
 
 # carregamos a imagem, dimensionamos uma janela para exibí-la, setamos a função de callback definida anteriormente
@@ -189,9 +193,9 @@ for i in range(3):
         p_matrix[i][j] = m[k]
         k += 1
 
-print(p_matrix)
+#print(p_matrix)
 
-print(project(p_matrix, [0, 0, 1, 1]))
+#print(project(p_matrix, [0, 0, 1, 1]))
 minip = np.zeros((3, 3))
 for i in range(3):
     for j in range(4):
@@ -201,7 +205,7 @@ for i in range(3):
 
 minip_inv = np.linalg.inv(minip)
 proj = reproject(minip_inv, (124, 156))
-print(proj)
+#print(proj)
 
 
 
