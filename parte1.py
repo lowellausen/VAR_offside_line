@@ -59,7 +59,9 @@ ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera([world_points], [img_points],
 rodri, jacobison = cv2.Rodrigues(rvecs[0])
 concat = np.hstack((rodri, tvecs[0]))
 
-
+res = np.matmul(mtx,concat)
+res2 = np.matmul(res, np.transpose(list((0.0, 0.0, 0.0, 1.0))))
+res2 = res2/res2[2]
 
 ##############################################################################################
 ##############################################################################################
