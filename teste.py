@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def mult(mat, arr):
+def project(mat, arr):
 	res = np.zeros((3, 1))
 	for i in range(3):
 		for j in range(4):
