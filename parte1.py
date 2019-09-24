@@ -34,15 +34,20 @@ def mouse_callback(event, x, y, flags, params):
         point_plane = reproject(minip_inv, pos)
 
         print(point_plane)
+        print(project(p_matrix, point_plane))
 
         head_point = point_plane
 
-        head_point[2] += 1.8
+        head_point[2] = 1.8
 
-        head_point = project(p_matrix, head_point)
+        #print(head_point)
+
+        head_point3d = project(p_matrix, head_point)
+
+        #print(head_point3d)
 
         draw_square_at(pos)
-        draw_square_at(head_point)
+        draw_square_at(head_point3d)
 
         cv2.imshow('image', img)
 
@@ -62,10 +67,10 @@ points = {
     (124, 156): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
     (123, 126): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
     (160, 175): (5.5, 5.5, 0.0, 1.0),  # pequena area
-    (154, 158): (-3.66, 11.0, 0.0, 1.0),  # mara de penalti, talvez
+    (254, 158): (-3.66, 11.0, 0.0, 1.0),  # mara de penalti, talvez
     (159, 124): (-7.32, 0.0, 1.22, 1.0),  # meio da trave direita
-    (274, 83): (-48.66, 0.0, 0.0, 1.0),  # bandeira
-    #(249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
+    (272, 68): (-48.66, 0.0, 1.5, 1.0),  # bandeira
+    (249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
 }
 """
 origem = (124,156) #ponto(0,0,0)
@@ -174,6 +179,8 @@ for i in range(3):
     for j in range(4):
         p_matrix[i][j] = m[k]
         k += 1
+
+print(p_matrix)
 
 print(project(p_matrix, points[keys[5]]))
 minip = np.zeros((3, 3))
