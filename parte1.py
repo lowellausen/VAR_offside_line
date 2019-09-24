@@ -12,6 +12,16 @@ def project(mat, arr):
     return res
 
 
+def reproject(mat, arr):
+    res = np.zeros((4, 1))
+    arr2 = [arr[0], arr[1], 1.0]
+    for i in range(3):
+        for j in range(3):
+            res[i] += mat[i][j]*arr2[j]
+    res = (res[0][0]/res[2][0], res[1][0]/res[2][0], 0.0, res[2][0]/res[2][0])
+    return res
+
+
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
 def mouse_callback(event, x, y, flags, params):
     if event == 1:
@@ -36,7 +46,7 @@ points = {
     (154, 158): (-3.66, 11.0, 0.0, 1.0),  # mara de penalti, talvez
     (159, 124): (-7.32, 0.0, 1.22, 1.0),  # meio da trave direita
     (274, 83): (-48.66, 0.0, 0.0, 1.0),  # bandeira
-    (249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
+    #(249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
 }
 """
 origem = (124,156) #ponto(0,0,0)
@@ -146,7 +156,19 @@ for i in range(3):
         p_matrix[i][j] = m[k]
         k += 1
 
-print(project(p_matrix, points[keys[0]]))
+print(project(p_matrix, points[keys[5]]))
+minip = np.zeros((3, 3))
+for i in range(3):
+    for j in range(4):
+        if j == 2:
+            continue
+        minip[i][min(j, 2)] = p_matrix[i][j]
+
+minip_inv = np.linalg.inv(minip)
+proj = reproject(minip_inv, (124, 156))
+print(proj)
+
+
 
 # exibimos a imagem por último para não receber cliques antes de tudo devidamente calculado
 cv2.imshow('image', img)
