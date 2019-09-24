@@ -68,8 +68,8 @@ points = {
     (123, 126): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
     (160, 175): (5.5, 5.5, 0.0, 1.0),  # pequena area
     (254, 158): (-3.66, 11.0, 0.0, 1.0),  # mara de penalti, talvez
-    (159, 124): (-7.32, 0.0, 1.22, 1.0),  # meio da trave direita
-    (272, 68): (-48.66, 0.0, 1.5, 1.0),  # bandeira
+    (159, 110): (-7.32, 0.0, 2.44, 1.0),  # meio da trave direita
+    (274, 82): (-48.66, 0.0, 0.0, 1.0),  # bandeira
     (249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
 }
 """
@@ -182,7 +182,7 @@ for i in range(3):
 
 print(p_matrix)
 
-print(project(p_matrix, points[keys[5]]))
+print(project(p_matrix, [0, 0, 1, 1]))
 minip = np.zeros((3, 3))
 for i in range(3):
     for j in range(4):
