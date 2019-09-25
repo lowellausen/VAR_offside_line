@@ -8,7 +8,9 @@ def project(mat, arr):
     for i in range(3):
         for j in range(3):
             res[i] += mat[i][j] * arr[j]
-    res = res // res[2]
+    res = res / res[2]
+    for i in range(3):
+        res[i] = np.round(res[i])
     return res
 
 
@@ -23,7 +25,23 @@ def reproject(mat, arr):
 
 
 def draw_square_at(pos):
+    global img
     img[int(pos[1]) - 2:int(pos[1]) + 2, int(pos[0]) - 2:int(pos[0]) + 2] = [0, 0, 255]
+
+def draw_line(x1, x2):
+    global img
+    img = cv2.line(img, x1, x2, (0, 0, 255), 4)
+
+def intersec(p1, p2, p3, p4):
+    x = 0
+    y = 1
+    numx = (p1[x]*p2[y] - p1[y]*p2[x])*(p3[x] - p4[x]) - (p1[x] - p2[x])*(p3[x]*p4[y] - p3[y]*p4[x])
+    denx = (p1[x] - p2[x])*(p3[y] - p4[y]) - (p1[y] - p2[y])*(p3[x] - p4[x])
+
+    numy = (p1[x]*p2[y] - p1[y]*p2[x])*(p3[y] - p4[y]) - (p1[y] - p2[y])*(p3[x]*p4[y] - p3[y]*p4[x])
+    deny = (p1[x] - p2[x])*(p3[y] - p4[y]) - (p1[y] - p2[y])*(p3[x] - p4[x])
+
+    return (numx/denx),(numy/deny), 1
 
 
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
@@ -36,20 +54,22 @@ def mouse_callback(event, x, y, flags, params):
         #print(point_plane)
         #print(project(p_matrix, point_plane))
 
-        line_point = point_plane3d
-
+        line_point = [point_plane3d[0] + 10.0, point_plane3d[1], 1.0]
         print(line_point)
 
-        line_point[0] += 10.0
+        int_point = intersec((point_plane3d[0], point_plane3d[1]), (line_point[0], line_point[1]), lat_line[0], lat_line[1])
 
-        #print(head_point)
+        int_point2d = project(p_matrix, int_point)
+        #print(int_point2d)
+
+        draw_square_at(int_point2d)
 
         line_point2d = project(p_matrix, line_point)
 
-        #print(head_point3d)
+        #draw_square_at(pos)
+        #draw_square_at(line_point2d)
 
-        draw_square_at(pos)
-        draw_square_at(line_point2d)
+        draw_line((pos[0], pos[1]), (line_point2d[0], line_point2d[1]))
 
         cv2.imshow('image', img)
 
@@ -141,14 +161,15 @@ for i in range(3):
         p_matrix[i][j] = m[k]
         k += 1
 
-print(p_matrix)
+#print(p_matrix)
 
-print(project(p_matrix, [0, 0, 1]))
+#print(project(p_matrix, [0, 0, 1]))
 
 p_inv = np.linalg.inv(p_matrix)
 proj = reproject(p_inv, (189, 116))
-print(proj)
+#print(proj)
 
+lat_line = ((50.0, 0.0), (50.0, 10.0, 1.0))
 
 
 # exibimos a imagem por último para não receber cliques antes de tudo devidamente calculado
