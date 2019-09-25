@@ -32,17 +32,6 @@ def draw_line(x1, x2):
     global img
     img = cv2.line(img, x1, x2, (0, 0, 255), 4)
 
-def intersec(p1, p2, p3, p4):
-    x = 0
-    y = 1
-    numx = (p1[x]*p2[y] - p1[y]*p2[x])*(p3[x] - p4[x]) - (p1[x] - p2[x])*(p3[x]*p4[y] - p3[y]*p4[x])
-    denx = (p1[x] - p2[x])*(p3[y] - p4[y]) - (p1[y] - p2[y])*(p3[x] - p4[x])
-
-    numy = (p1[x]*p2[y] - p1[y]*p2[x])*(p3[y] - p4[y]) - (p1[y] - p2[y])*(p3[x]*p4[y] - p3[y]*p4[x])
-    deny = (p1[x] - p2[x])*(p3[y] - p4[y]) - (p1[y] - p2[y])*(p3[x] - p4[x])
-
-    return (numx/denx),(numy/deny), 1
-
 
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
 def mouse_callback(event, x, y, flags, params):
@@ -51,25 +40,13 @@ def mouse_callback(event, x, y, flags, params):
 
         point_plane3d = reproject(p_inv, pos)
 
-        #print(point_plane)
-        #print(project(p_matrix, point_plane))
+        int_point1 = (lat1, point_plane3d[1], 1.0)
+        int_point2 = (lat2, point_plane3d[1], 1.0)
 
-        line_point = [point_plane3d[0] + 10.0, point_plane3d[1], 1.0]
-        print(line_point)
+        int_point12d = project(p_matrix, int_point1)
+        int_point22d = project(p_matrix, int_point2)
 
-        int_point = intersec((point_plane3d[0], point_plane3d[1]), (line_point[0], line_point[1]), lat_line[0], lat_line[1])
-
-        int_point2d = project(p_matrix, int_point)
-        #print(int_point2d)
-
-        draw_square_at(int_point2d)
-
-        line_point2d = project(p_matrix, line_point)
-
-        #draw_square_at(pos)
-        #draw_square_at(line_point2d)
-
-        draw_line((pos[0], pos[1]), (line_point2d[0], line_point2d[1]))
+        draw_line((int_point12d[0], int_point12d[1]), (int_point22d[0], int_point22d[1]))
 
         cv2.imshow('image', img)
 
@@ -86,18 +63,19 @@ cv2.setMouseCallback('image', mouse_callback)
 # pontos medidos manualmente que serão utilizados para a calibração da câmera
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
-    (589, 116): (0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
+    #(589, 116): (0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
+    #(266, 238): (-(16.5 + 7.32), 16.5, 1.0),
+    #(525, 23): (50.0, 0.0, 1.0),
+    #(262, 343): (-57.32, 16.5, 1.0)
 
-    #(377, 134): (-3.66, 11.0, 1.0),  # marca de penal
-    #(268, 60): (16.5, 16.5, 1.0),  # grande área
-    #(508, 177): (-(5.5 + 7.32), 5.5, 1.0),  # pequena área
-
-    (266, 238): (-(16.5 + 7.32), 16.5, 1.0),
-    (525, 23): (50.0, 0.0, 1.0),
-    (262, 343): (-57.32, 16.5, 1.0),
-
-    #(268, 60): (16.5, 16.5, 1.0)
+    (269, 62): (0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
+    (474, 100): (11.0, 11.0, 1.0),
+    (267, 238): (40.32, 0.0, 1.0),
+    (509, 177): (29.32, 11.0, 1.0)
 }
+
+lat1 = -15.5  # distância em x que define uma linha lateral do campo
+lat2 = 54.5
 
 # estrutura que armezanará a matriz P de câmera
 p_matrix = np.zeros((3, 3))
@@ -169,7 +147,6 @@ p_inv = np.linalg.inv(p_matrix)
 proj = reproject(p_inv, (189, 116))
 #print(proj)
 
-lat_line = ((50.0, 0.0), (50.0, 10.0, 1.0))
 
 
 # exibimos a imagem por último para não receber cliques antes de tudo devidamente calculado
