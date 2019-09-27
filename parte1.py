@@ -37,21 +37,20 @@ def draw_line(x1, x2):
 
 def draw_ney(x1, x2):
     ney = choice(os.listdir("./ney/"))
-    dist = np.linalg.norm(x2 - x1)
     newsize = (20, int(np.abs(x2[1] - x1[1]))+10)
     y_offset = int(x2[1] - newsize[1]/2)
     x_offset = int(x2[0] - newsize[0]/2)
-    s_img = cv2.imread('./ney/' + ney, -1)
-    s_img = cv2.resize(s_img, newsize,  interpolation=cv2.INTER_AREA)
+    neyney = cv2.imread('./ney/' + ney, -1)
+    neyney = cv2.resize(neyney, newsize,  interpolation=cv2.INTER_AREA)
 
-    y1, y2 = y_offset, y_offset + s_img.shape[0]
-    x1, x2 = x_offset, x_offset + s_img.shape[1]
+    y1, y2 = y_offset, y_offset + neyney.shape[0]
+    x1, x2 = x_offset, x_offset + neyney.shape[1]
 
-    alpha_s = s_img[:, :, 3] / 255.0
+    alpha_s = neyney[:, :, 3] / 255.0
     alpha_l = 1.0 - alpha_s
 
     for c in range(0, 3):
-        img[y1:y2, x1:x2, c] = (alpha_s * s_img[:, :, c] +
+        img[y1:y2, x1:x2, c] = (alpha_s * neyney[:, :, c] +
                                 alpha_l * img[y1:y2, x1:x2, c])
 
 
