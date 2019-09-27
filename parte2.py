@@ -30,7 +30,7 @@ def draw_square_at(pos):
 
 def draw_line(x1, x2):
     global img
-    img = cv2.line(img, x1, x2, (0, 0, 255), 4)
+    img = cv2.line(img, x1, x2, (0, 0, 255), 2)
 
 
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
@@ -65,27 +65,29 @@ cv2.setMouseCallback('image', mouse_callback)
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
     #leo
-    #(589, 116): (0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
-    #(266, 238): (-(16.5 + 7.32), 16.5, 1.0),
-    #(525, 23): (50.0, 0.0, 1.0),
-    #(262, 343): (-57.32, 16.5, 1.0)
-
-    #giova
     #(269, 62): (0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
     #(474, 100): (11.0, 11.0, 1.0),
     #(267, 238): (40.32, 0.0, 1.0),
     #(509, 177): (29.32, 11.0, 1.0)
 
-    #kovalsko
+    #giova
     (589, 116): (0.0, 0.0, 1.0),
-    (525, 23): (41.34, 0.0, 1.0),
-    (268, 23): (41.34, 16.5, 1.0),
-    (270, 120): (0, 16.5, 1.0)
+    (269, 62): (16.5, 16.5, 1.0),
+    (474, 100): (5.5, 5.5, 1.0),
+    (267, 238): (-23.82, 16.5, 1.0),
+    (509, 177): (-12.82, 5.5, 1.0),
+    (377, 134): (-3.66, 11.0, 1.0)
+
+    #kovalsko
+    #(589, 116): (0.0, 0.0, 1.0),
+    #(525, 23): (41.34, 0.0, 1.0),
+    #(268, 23): (41.34, 16.5, 1.0),
+    #(270, 120): (0, 16.5, 1.0)
 
 }
 
-lat1 = 41.34  # distância em x que define uma linha lateral do campo
-lat2 = -51.8
+lat1 = 31.0  # distância em x que define uma linha lateral do campo
+lat2 = -38.2
 
 # estrutura que armezanará a matriz P de câmera
 p_matrix = np.zeros((3, 3))

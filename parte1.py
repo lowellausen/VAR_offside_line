@@ -1,6 +1,6 @@
 import cv2   # biblioteca opencv utilizada para funções de imagem
 import numpy as np  # biblioteca numpy para funções matemáticas, como a SDV
-
+from random import randint
 
 # função que projeta o ponto 3d arr (coord homo) para o plano 2d de imagem utilizando a matriz mat, já realizando divisão perspectiva
 def project(mat, arr):
@@ -31,18 +31,36 @@ def draw_square_at(pos):
 
 def draw_line(x1, x2):
     global img
-    img = cv2.line(img, x1, x2, (0, 0, 255), 4)
+    img = cv2.line(img, x1, x2, (randint(0, 255), randint(0, 255), randint(0, 255)), 2)
+
+
+def draw_ney(x1, x2):
+    dist = np.linalg.norm(x2 - x1)
+    newsize = (20, int(np.abs(x2[1] - x1[1]))+10)
+    y_offset = int(x2[1] - newsize[1]/2)
+    x_offset = int(x2[0] - newsize[0]/2)
+    s_img = cv2.imread("neyney.png", -1)
+    s_img = cv2.resize(s_img, newsize)
+
+    y1, y2 = y_offset, y_offset + s_img.shape[0]
+    x1, x2 = x_offset, x_offset + s_img.shape[1]
+
+    alpha_s = s_img[:, :, 3] / 255.0
+    alpha_l = 1.0 - alpha_s
+
+    for c in range(0, 3):
+        img[y1:y2, x1:x2, c] = (alpha_s * s_img[:, :, c] +
+                                alpha_l * img[y1:y2, x1:x2, c])
 
 
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
 def mouse_callback(event, x, y, flags, params):
-    if event == 1:
-        #pos = (124, 156)
+    if event == 1 or event == 2:
         pos = (x, y)
 
         point_plane = reproject(minip_inv, pos)
 
-        #print(point_plane)
+        print(point_plane)
         #print(project(p_matrix, point_plane))
 
         head_point = point_plane
@@ -54,17 +72,19 @@ def mouse_callback(event, x, y, flags, params):
         head_point2d = project(p_matrix, head_point)
 
 
-        print(head_point2d)
+        #print(head_point2d)
 
         #draw_square_at(pos)
         #draw_square_at(head_point2d)
 
-        draw_line((pos[0], pos[1]), (head_point2d[0], head_point2d[1]))
-
+        if event == 1:
+            draw_line((pos[0], pos[1]), (head_point2d[0], head_point2d[1]))
+        else:
+            draw_ney(np.asarray((pos[0], pos[1])), np.asarray((head_point2d[0][0], head_point2d[1][0])))
 
         cv2.imshow('image', img)
 
-        #print(pos)
+        print(pos)
 
 
 # carregamos a imagem, dimensionamos uma janela para exibí-la, setamos a função de callback definida anteriormente
@@ -77,21 +97,23 @@ cv2.setMouseCallback('image', mouse_callback)
 # pontos medidos manualmente que serão utilizados para a calibração da câmera
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
-    #(124, 156): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
-    #(123, 126): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
-    #(160, 175): (5.5, 5.5, 0.0, 1.0),  # pequena area
-    #(254, 158): (-3.66, 11.0, 0.0, 1.0),  # mara de penalti, talvez
-    #(159, 110): (-7.32, 0.0, 2.44, 1.0),  # meio da trave direita
-    #(274, 82): (-48.66, 0.0, 0.0, 1.0),  # bandeira
-    #(249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
+    #giva
+    #(160, 139): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
+    #(159, 111): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
+    #(124, 157): (7.32, 0.0, 0.0, 1.0),  # pequena area
+    #(123, 127): (7.32, 0.0, 2.44, 1.0),  # mara de penalti, talvez
+    #(161, 176): (12.82, 5.5, 0.0, 1.0),  # meio da trave direita
+    #(242, 131): (-5.5, 5.5, 0.0, 1.0),  # bandeira
 
-    (160, 139): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
-    (159, 111): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
-    (124, 157): (7.32, 0.0, 0.0, 1.0),  # pequena area
-    (123, 127): (7.32, 0.0, 2.44, 1.0),  # mara de penalti, talvez
-    (161, 176): (12.82, 5.5, 0.0, 1.0),  # meio da trave direita
-    (242, 131): (-5.5, 5.5, 0.0, 1.0),  # bandeira
-    #(249, 221): (16.5, 16.5, 0.0, 1.0)  # grande area
+    (124, 157): (0.0, 0.0, 0.0, 1.0),  # origem - inferior trave esquerda
+    (161, 176): (5.5, 5.5, 0.0, 1.0),  # corner esquerdo pequena área
+    (123, 127): (0.0, 0.0, 2.44, 1.0),  # gaveta trave esquerda
+    (160, 139): (-7.32, 0.0, 0.0, 1.0),  # inferior trave direita
+    (242, 131): (-12.82, 5.5, 0.0, 1.0),  # corner direito pequena área
+    (159, 111): (-7.32, 0.0, 2.44, 1.0),  #gaveta trave direita
+    (30, 204): (16.5, 0.0, 0.0, 1.0),  # corner linha de fundo grande área esquerda
+    (227, 105): (-23.82, 0.0, 0.0, 1.0),  # corner linha de fundo grande área direita
+    (252, 157): (-3.66, 11.0, 0.0, 1.0)  # marca de penal
 }
 
 """
@@ -215,7 +237,6 @@ for i in range(3):
 minip_inv = np.linalg.inv(minip)
 proj = reproject(minip_inv, (124, 156))
 #print(proj)
-
 
 
 # exibimos a imagem por último para não receber cliques antes de tudo devidamente calculado
