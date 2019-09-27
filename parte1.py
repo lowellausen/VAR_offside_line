@@ -1,6 +1,7 @@
 import cv2   # biblioteca opencv utilizada para funções de imagem
 import numpy as np  # biblioteca numpy para funções matemáticas, como a SDV
-from random import randint
+from random import randint, choice
+import os
 
 # função que projeta o ponto 3d arr (coord homo) para o plano 2d de imagem utilizando a matriz mat, já realizando divisão perspectiva
 def project(mat, arr):
@@ -35,11 +36,13 @@ def draw_line(x1, x2):
 
 
 def draw_ney(x1, x2):
+    ney = choice(os.listdir("./ney/"))
+    print(ney)
     dist = np.linalg.norm(x2 - x1)
     newsize = (20, int(np.abs(x2[1] - x1[1]))+10)
     y_offset = int(x2[1] - newsize[1]/2)
     x_offset = int(x2[0] - newsize[0]/2)
-    s_img = cv2.imread("neyney.png", -1)
+    s_img = cv2.imread('./ney/' + ney, -1)
     s_img = cv2.resize(s_img, newsize)
 
     y1, y2 = y_offset, y_offset + s_img.shape[0]
