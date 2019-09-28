@@ -217,6 +217,9 @@ u, s, vh = np.linalg.svd(a_matrix)
 # m é o solução para o nosso sisteminha a
 m = vh[dima2 - 1, :]
 
+err =np.matmul(a_matrix, m)
+print(err)
+
 # transformamos o array m da solução para o formato de matriz 3x4 de interesse
 # p_matrix agora está devidamente ajustada e é a matriz de transformação de interesse!!
 k = 0
