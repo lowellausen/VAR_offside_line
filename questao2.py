@@ -84,12 +84,12 @@ cv2.setMouseCallback('image', mouse_callback)
 # pontos medidos manualmente que serão utilizados para a calibração da câmera
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
-    (589, 116): (0.0, 0.0, 1.0),
-    (269, 62): (16.5, 16.5, 1.0),
-    (474, 100): (5.5, 5.5, 1.0),
-    (267, 238): (-23.82, 16.5, 1.0),
-    (509, 177): (-12.82, 5.5, 1.0),
-    (377, 134): (-3.66, 11.0, 1.0)
+    (589, 116): (0.0, 0.0, 1.0),  # origem - trave inferior esquerda parcialmente visível
+    (269, 62): (16.5, 16.5, 1.0),  # corner esquerdo grande área
+    (474, 100): (5.5, 5.5, 1.0),  # corner esquerdo pequena área
+    (267, 238): (-23.82, 16.5, 1.0),  # corner direito grande área
+    (509, 177): (-12.82, 5.5, 1.0),  # corner direito pequena área
+    (377, 134): (-3.66, 11.0, 1.0)  # marca penal
 }
 #  distâncias em x que definem as linhas laterais do campo
 lat1 = 31.0
