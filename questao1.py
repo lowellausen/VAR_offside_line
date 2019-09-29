@@ -206,6 +206,7 @@ k = 0
 while 1:
     k = cv2.waitKey(0)
 
-    if k == 27:
-        cv2.destroyAllWindows()
+    saida = cv2.destroyAllWindows()
+    if (saida == None):
         break
+print(saida)
