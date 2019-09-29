@@ -1,8 +1,16 @@
+#UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+#INSTITUTO DE INFORMÁTICA
+#TRABALHO DA DISCIPLINA INF01030 - FUNDAMENTOS DE VISÃO COMPUTACIONAL
+#Implementa̧c̃ao de algoritmo de calibra̧c̃ao de câmera
+#Alunos:  Leonardo Oliveira Wellausen
+#Matheus Fernandes Kovaleski
+#Orientadore:  Prof.  Dr.  Cĺaudio Rosito Jung
+
 import cv2   # biblioteca opencv utilizada para funções de imagem
 import numpy as np  # biblioteca numpy para funções matemáticas, como a SDV
 
 
-# função que projeta o ponto 3d arr (coord homo) para o plano 2d de imagem utilizando a matriz mat, já realizando divisão perspectiva
+# função que projeta um ponto do plano 3d do campo (coord homo) para o plano 2d de imagem utilizando a matriz mat, já realizando divisão perspectiva
 def project(mat, arr):
     res = np.zeros((3, 1))
     for i in range(3):
@@ -14,6 +22,8 @@ def project(mat, arr):
     return res
 
 
+#  função que projeta um ponto 2d em coordenadas de tela para um ponto 3d (no plano z=0 do campo) no mundo
+#  basicamente uma multiplicação matricial com divisão perspectiva
 def reproject(mat, arr):
     res = np.zeros((3, 1))
     arr2 = [arr[0], arr[1], 1.0]
@@ -24,10 +34,13 @@ def reproject(mat, arr):
     return res
 
 
+#  função que desenha um quadrado vermelho na posição pos da imagem original
 def draw_square_at(pos):
     global img
     img[int(pos[1]) - 2:int(pos[1]) + 2, int(pos[0]) - 2:int(pos[0]) + 2] = [0, 0, 255]
 
+
+#  função que desenha uma linha (segmento de reta) de cor aleatória entre os pontos x1 e x2 na imagem original
 def draw_line(x1, x2):
     global img
     img = cv2.line(img, x1, x2, (0, 0, 255), 2)
@@ -36,22 +49,29 @@ def draw_line(x1, x2):
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
 def mouse_callback(event, x, y, flags, params):
     if event == 1:
+        #  é a posição onde o usuário clicou na tela
         pos = (x, y)
 
+        #  projeção do ponto pos no plano da imagem para o plano 3d do campo
         point_plane3d = reproject(p_inv, pos)
-        print(point_plane3d)
 
+        #  intersecções de uma linha paralela à linha de fundo (eixo x) que passa pelo ponto point_plane 3d
+        #       com as duas linhas laterais do campo, determinando ponto de início e fim do seg de reta a ser desenhado
+        #  intersecção são calculadas com base na distância em x das linhas laterais, que são conhecidaa, e na distância
+        #       em y do ponto selecionado pelo usuário. de certa forma é um projeção do vetor point_plane3d nas retas
+        #       x=lat1 e x=lat2
         int_point1 = (lat1, point_plane3d[1], 1.0)
         int_point2 = (lat2, point_plane3d[1], 1.0)
 
+        #  os pontos de intersecção encontrados são então projetados ao plano de imagem
         int_point12d = project(p_matrix, int_point1)
         int_point22d = project(p_matrix, int_point2)
 
+        #  e por último desenhamos o segmento de reta ligando os dois pontos de intersecção
         draw_line((int_point12d[0], int_point12d[1]), (int_point22d[0], int_point22d[1]))
 
+        #  exibimos a imagem atualizada
         cv2.imshow('image', img)
-
-        print(pos)
 
 
 # carregamos a imagem, dimensionamos uma janela para exibí-la, setamos a função de callback definida anteriormente
@@ -64,29 +84,15 @@ cv2.setMouseCallback('image', mouse_callback)
 # pontos medidos manualmente que serão utilizados para a calibração da câmera
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
-    #leo
-    #(269, 62): (0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
-    #(474, 100): (11.0, 11.0, 1.0),
-    #(267, 238): (40.32, 0.0, 1.0),
-    #(509, 177): (29.32, 11.0, 1.0)
-
-    #giova
     (589, 116): (0.0, 0.0, 1.0),
     (269, 62): (16.5, 16.5, 1.0),
     (474, 100): (5.5, 5.5, 1.0),
     (267, 238): (-23.82, 16.5, 1.0),
     (509, 177): (-12.82, 5.5, 1.0),
     (377, 134): (-3.66, 11.0, 1.0)
-
-    #kovalsko
-    #(589, 116): (0.0, 0.0, 1.0),
-    #(525, 23): (41.34, 0.0, 1.0),
-    #(268, 23): (41.34, 16.5, 1.0),
-    #(270, 120): (0, 16.5, 1.0)
-
 }
-
-lat1 = 31.0  # distância em x que define uma linha lateral do campo
+#  distâncias em x que definem as linhas laterais do campo
+lat1 = 31.0
 lat2 = -38.2
 
 # estrutura que armezanará a matriz P de câmera
@@ -151,15 +157,8 @@ for i in range(3):
         p_matrix[i][j] = m[k]
         k += 1
 
-#print(p_matrix)
-
-#print(project(p_matrix, [0, 0, 1]))
-
+#   calculamos a inversa da matriz p, essa matriz será utilizada pra a projeção de pontos no plano da imagem para o plano 3d do campo
 p_inv = np.linalg.inv(p_matrix)
-proj = reproject(p_inv, (189, 116))
-#print(proj)
-
-
 
 # exibimos a imagem por último para não receber cliques antes de tudo devidamente calculado
 cv2.imshow('image', img)

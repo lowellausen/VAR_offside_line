@@ -1,9 +1,19 @@
+#UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+#INSTITUTO DE INFORMÁTICA
+#TRABALHO DA DISCIPLINA INF01030 - FUNDAMENTOS DE VISÃO COMPUTACIONAL
+#Implementa̧c̃ao de algoritmo de calibra̧c̃ao de câmera
+#Alunos:  Leonardo Oliveira Wellausen
+#Matheus Fernandes Kovaleski
+#Orientadore:  Prof.  Dr.  Cĺaudio Rosito Jung
+
 import cv2   # biblioteca opencv utilizada para funções de imagem
 import numpy as np  # biblioteca numpy para funções matemáticas, como a SDV
-from random import randint, choice
+from random import randint, choice  # random para escolha de cores e neys
 import os
 
-# função que projeta o ponto 3d arr (coord homo) para o plano 2d de imagem utilizando a matriz mat, já realizando divisão perspectiva
+
+#  função que projeta o ponto 3d arr (coord homo) para o plano 2d de imagem utilizando a matriz mat, já realizando divisão perspectiva
+#  basicamente uma multiplicação matricial com divisão perspectiva
 def project(mat, arr):
     res = np.zeros((3, 1))
     for i in range(3):
@@ -15,6 +25,8 @@ def project(mat, arr):
     return res
 
 
+#  função que projeta um ponto 2d em coordenadas de tela para um ponto 3d (no plano z=0 do campo) no mundo
+#  basicamente uma multiplicação matricial com divisão perspectiva
 def reproject(mat, arr):
     res = np.zeros((4, 1))
     arr2 = [arr[0], arr[1], 1.0]
@@ -25,16 +37,19 @@ def reproject(mat, arr):
     return res
 
 
+#  função que desenha um quadrado vermelho na posição pos da imagem original
 def draw_square_at(pos):
     global img
     img[int(pos[1]) - 2:int(pos[1]) + 2, int(pos[0]) - 2:int(pos[0]) + 2] = [0, 0, 255]
 
 
+#  função que desenha uma linha (segmento de reta) de cor aleatória entre os pontos x1 e x2 na imagem original
 def draw_line(x1, x2):
     global img
     img = cv2.line(img, x1, x2, (randint(0, 255), randint(0, 255), randint(0, 255)), 2)
 
 
+#  função que desenha um neymar aleatório (dentre os disponíveis na base de dados em ./ney/) entre a posição x1 e x2 na imagem original
 def draw_ney(x1, x2):
     ney = choice(os.listdir("./ney/"))
     newsize = (20, int(np.abs(x2[1] - x1[1]))+10)
@@ -57,35 +72,28 @@ def draw_ney(x1, x2):
 # função callback chamada quando é detectado um clique de mouse, desenha o jogador na tela
 def mouse_callback(event, x, y, flags, params):
     if event == 1 or event == 2:
+        #  é a posição onde o usuário clicou na tela
         pos = (x, y)
 
+        #  point_plane é a projeção do ponto de tela pos no plano 3d z=0 do campo, representado pés de um jogador
         point_plane = reproject(minip_inv, pos)
-
-        print(point_plane)
-        #print(project(p_matrix, point_plane))
-
-        head_point = point_plane
-
-        head_point[2] = 1.8
-
-        #print(head_point)
-
-        head_point2d = project(p_matrix, head_point)
-
-
-        #print(head_point2d)
+        #  incrementamos em 1.8 a coordenada z deste ponto no mundo, representado a altura do jogador
+        point_plane[2] = 1.8
+        #  e então projetamos este ponto 3d alterado de volta para o plano de imagem, em head_point2d, representando a cabeça de m jogador
+        head_point2d = project(p_matrix, point_plane)
 
         #draw_square_at(pos)
         #draw_square_at(head_point2d)
 
+        #  tendo os dois pontos do jogador em mãos (pés e cabeça) em coord de imagem podemos desenhar um segmento de reta os ligando, repesentando um jogador inteiro
+        #  caso clique com botão esquerdo do mouse desenhamos o seg de reta, caso botão direito desenhamos um neymar
         if event == 1:
             draw_line((pos[0], pos[1]), (head_point2d[0], head_point2d[1]))
         else:
             draw_ney(np.asarray((pos[0], pos[1])), np.asarray((head_point2d[0][0], head_point2d[1][0])))
 
+        #  atualiza a exibição da imagem
         cv2.imshow('image', img)
-
-        print(pos)
 
 
 # carregamos a imagem, dimensionamos uma janela para exibí-la, setamos a função de callback definida anteriormente
@@ -98,14 +106,6 @@ cv2.setMouseCallback('image', mouse_callback)
 # pontos medidos manualmente que serão utilizados para a calibração da câmera
 # dicionário onde a chave é uma tupla 2d de coordenadas de pixel e seus valores são os correspondentes pontos 3d (coord homo) representando o ponto no mundo
 points = {
-    #giva
-    #(160, 139): (0.0, 0.0, 0.0, 1.0),  # origem (trave esquerda com lina de fundo)
-    #(159, 111): (0.0, 0.0, 2.44, 1.0),  # alto da trave esquerda
-    #(124, 157): (7.32, 0.0, 0.0, 1.0),  # pequena area
-    #(123, 127): (7.32, 0.0, 2.44, 1.0),  # mara de penalti, talvez
-    #(161, 176): (12.82, 5.5, 0.0, 1.0),  # meio da trave direita
-    #(242, 131): (-5.5, 5.5, 0.0, 1.0),  # bandeira
-
     (124, 157): (0.0, 0.0, 0.0, 1.0),  # origem - inferior trave esquerda
     (161, 176): (5.5, 5.5, 0.0, 1.0),  # corner esquerdo pequena área
     (123, 127): (0.0, 0.0, 2.44, 1.0),  # gaveta trave esquerda
@@ -117,45 +117,6 @@ points = {
     (252, 157): (-3.66, 11.0, 0.0, 1.0)  # marca de penal
 }
 
-"""
-origem = (124,156) #ponto(0,0,0)
-trave = (123, 126)
-altura_trave = 2.44
-#ponto (0,0,altura_trave)
-peq_area = (160,175) #ponto (5.5, 5.5, 0)
-penalti = (254, 158)# ponto (-3.66 ,11.0,0.0)
-trave_dir = (159,124)#(-7.32, 0, 1.22)
-bandeira = (274,83)# (-48.66, 0,0)
-grande_area = (249,221)#(16.5,16.5,0)
-"""
-
-############################################################################################
-############## CALIBRATE DO OPENCV PARA TIRA TEIMAS ########################################
-
-'''
-# preparando em arrays para a função opencv
-world_points = []
-img_points = []
-
-for k in points.keys():
-    world_points.append(tuple(points[k]))
-    img_points.append(tuple(k))
-
-world_points = np.array(world_points, 'float32')
-img_points = np.array(img_points, 'float32')
-
-camera_matrix = cv2.initCameraMatrix2D([world_points], [img_points], size)
-ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera([world_points], [img_points], size, camera_matrix, None,
-                                                   flags=cv2.CALIB_USE_INTRINSIC_GUESS)
-rodri, jacobison = cv2.Rodrigues(rvecs[0])
-concat = np.hstack((rodri, tvecs[0]))
-
-res = np.matmul(mtx, concat)
-res2 = np.matmul(res, np.transpose(list((0.0, 0.0, 0.0, 1.0))))
-res2 = res2 / res2[2]
-'''
-##############################################################################################
-##############################################################################################
 
 # estrutura que armezanará a matriz P de câmera
 p_matrix = np.zeros((3, 4))
@@ -217,9 +178,6 @@ u, s, vh = np.linalg.svd(a_matrix)
 # m é o solução para o nosso sisteminha a
 m = vh[dima2 - 1, :]
 
-err =np.matmul(a_matrix, m)
-print(err)
-
 # transformamos o array m da solução para o formato de matriz 3x4 de interesse
 # p_matrix agora está devidamente ajustada e é a matriz de transformação de interesse!!
 k = 0
@@ -228,9 +186,8 @@ for i in range(3):
         p_matrix[i][j] = m[k]
         k += 1
 
-#print(p_matrix)
-
-#print(project(p_matrix, [0, 0, 1, 1]))
+#  para realizar a projeção inversa (coord de img para mundo) geramos uma versão mini da matriz p
+#  onde mini significa sem os valores relativos ao eixo z do mundo; sem a terceira coluna
 minip = np.zeros((3, 3))
 for i in range(3):
     for j in range(4):
@@ -238,14 +195,11 @@ for i in range(3):
             continue
         minip[i][min(j, 2)] = p_matrix[i][j]
 
+#  então calculamos a inversa de minip, essa matriz que será então usada para projeção de img para mundo
 minip_inv = np.linalg.inv(minip)
-proj = reproject(minip_inv, (124, 156))
-#print(proj)
-
 
 # exibimos a imagem por último para não receber cliques antes de tudo devidamente calculado
 cv2.imshow('image', img)
-
 
 # ficamos em laço esperando o usuário ou fechar a janela ou clicar na imagem (botão esquerdo) para adicionar um jogador
 k = 0
