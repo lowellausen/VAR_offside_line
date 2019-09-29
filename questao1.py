@@ -209,4 +209,3 @@ while 1:
     saida = cv2.destroyAllWindows()
     if (saida == None):
         break
-print(saida)
