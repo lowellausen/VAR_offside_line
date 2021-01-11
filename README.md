@@ -1,8 +1,3 @@
-# thundercats
-visão além do alcance
-trabalho 1
-entrega dia 29/09/19- até as 23:55
-entregar 100% funcional
-\o/
+# vision1
 
-![alt text](https://i.ytimg.com/vi/BKnig_EkE6s/hqdefault.jpg)
+First assignment for Computer Vision Course at INF/UFRGS. 2019/2
