@@ -21,6 +21,6 @@ In the image where we mapped the fiel plane only (z=0), the goal is to make an o
 
 In the other image we map the 3D space, the goal is to project a "player". The user clicks somehwere in the screen. that point is projected to 3D (considering Z=0 hence the field plane), where a straight line is made from the point (x, y, 0) selected to (x, y, 1.8) to represent a player, then projected to the image:
 
-(disclaimer: a bug may cause Neymar to show instead of a line somtimes)
+(disclaimer: a bug may cause Neymar to show instead of a line sometimes)
 
 ![Alt text](relats/res1.png?raw=true "Initial scene")
